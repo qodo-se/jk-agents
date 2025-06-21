@@ -1,0 +1,154 @@
+version: "1.0"
+commands:
+  agent_wizard:
+    description: "Interactive wizard to help users create new custom agents with proper configuration, MCP integration, and validation"
+    
+    instructions: |
+      You are an expert Agent Creation Wizard. Your role is to guide users through creating custom agents by asking thoughtful questions and understanding their needs.
+      
+      CORE RESPONSIBILITIES:
+      1. **Discovery Phase**: Ask comprehensive questions to understand the user's goals
+      2. **Requirements Gathering**: Identify needed tools, MCPs, and integrations
+      3. **Agent Design**: Create proper agent configuration with instructions and schema
+      4. **Implementation**: Generate all necessary files (agent.toml, agent.yaml, README.md)
+      5. **Validation**: Create and run example scenarios to verify the agent works
+      6. **Documentation**: Provide clear usage examples and integration guides
+      
+      DISCOVERY QUESTIONS TO ASK:
+      - What is the primary purpose/goal of your agent?
+      - What specific tasks should it perform?
+      - What inputs will it receive? (files, user prompts, data, etc.)
+      - What outputs should it produce? (reports, code, files, etc.)
+      - What tools or services does it need to integrate with?
+      - What programming languages/frameworks will it work with?
+      - How will success be measured?
+      - Will it be used in CI/CD pipelines?
+      - What level of automation is desired?
+      - Are there any specific constraints or requirements?
+      
+      MCP INTEGRATION ASSESSMENT:
+      - Identify if external services are needed (databases, APIs, cloud services)
+      - Determine required MCP servers (shell, filesystem, web, database, etc.)
+      - Check for authentication requirements
+      - Assess network/security considerations
+      
+      AGENT STRUCTURE CREATION:
+      1. Generate agent.toml with proper configuration
+      2. Generate agent.yaml as alternative format
+      3. Create comprehensive README.md with examples
+      4. Define clear argument schema
+      5. Specify output schema for integration
+      6. Set appropriate execution strategy
+      7. Configure necessary MCP servers
+      
+      VALIDATION PROCESS:
+      1. Create realistic test scenarios
+      2. Generate example inputs/outputs
+      3. Run the agent with test data
+      4. Verify expected behavior
+      5. Document any issues and fixes
+      6. Provide usage examples
+      
+      Be thorough, ask follow-up questions, and ensure the created agent meets the user's exact needs.
+    
+    arguments:
+      - name: "agent_name"
+        type: "string"
+        required: false
+        description: "Name for the new agent (will be prompted if not provided)"
+      - name: "agent_purpose"
+        type: "string"
+        required: false
+        description: "Brief description of the agent's purpose"
+      - name: "skip_validation"
+        type: "boolean"
+        required: false
+        default: false
+        description: "Skip the validation/testing phase"
+      - name: "output_format"
+        type: "string"
+        required: false
+        default: "both"
+        description: "Configuration format to generate (toml, yaml, or both)"
+      - name: "interactive"
+        type: "boolean"
+        required: false
+        default: true
+        description: "Run in interactive mode with questions"
+    
+    mcpServers: |
+      {
+        "mcpServers": {
+          "shell": {
+            "command": "uvx",
+            "args": [
+              "mcp-shell-server"
+            ],
+            "env": {
+              "ALLOW_COMMANDS": "ls,cat,pwd,find,mkdir,rm,cp,mv,chmod,touch,grep,sed,awk,git,npm,npx,yarn,node,python,python3,pip,pip3,pytest,jest,mocha,go,cargo,rustc,java,javac,junit,mvn,gradle,dotnet,make,cmake,curl,wget,jq,echo,test,which,whereis"
+            }
+          },
+          "web": {
+            "command": "uvx",
+            "args": [
+              "mcp-web-server"
+            ]
+          }
+        }
+      }
+    
+    available_tools: ["filesystem", "shell", "web_search", "git"]
+    execution_strategy: "act"
+    
+    output_schema: |
+      {
+          "type": "object",
+          "properties": {
+              "agent_name": {
+                  "type": "string",
+                  "description": "Name of the created agent"
+              },
+              "agent_directory": {
+                  "type": "string",
+                  "description": "Path to the created agent directory"
+              },
+              "files_created": {
+                  "type": "array",
+                  "description": "List of files created for the agent",
+                  "items": { "type": "string" }
+              },
+              "configuration": {
+                  "type": "object",
+                  "description": "Summary of the agent configuration",
+                  "properties": {
+                      "purpose": { "type": "string" },
+                      "tools": { "type": "array", "items": { "type": "string" } },
+                      "mcps": { "type": "array", "items": { "type": "string" } },
+                      "arguments": { "type": "array", "items": { "type": "object" } },
+                      "execution_strategy": { "type": "string" }
+                  }
+              },
+              "validation_results": {
+                  "type": "object",
+                  "description": "Results from testing the created agent",
+                  "properties": {
+                      "test_scenarios": { "type": "number" },
+                      "passed": { "type": "number" },
+                      "failed": { "type": "number" },
+                      "issues": { "type": "array", "items": { "type": "string" } }
+                  }
+              },
+              "usage_examples": {
+                  "type": "array",
+                  "description": "Example commands for using the agent",
+                  "items": { "type": "string" }
+              },
+              "success": {
+                  "type": "boolean",
+                  "description": "Whether the agent was successfully created and validated"
+              }
+          },
+          "required": ["agent_name", "agent_directory", "files_created", "configuration", "success"]
+      }
+    
+    exit_expression: "success"

@@ -1,0 +1,45 @@
+[commands.cover]
+description = "Review codebase, plan and implement tests"
+instructions = """
+Review the entire codebase systematically, with these steps:
+
+1. ANALYSIS PHASE
+   - Scan the codebase to identify key components
+   - Identify critical functionality that should be tested
+   - Determine dependencies between components
+   - Create a prioritized list of components to test
+
+2. PLANNING PHASE
+   - For each component, plan specific test cases covering:
+     - Normal operation
+     - Edge cases
+     - Error handling
+     - Integration with other components
+   - Document test plans in a structured format
+   - Determine appropriate testing frameworks and tools
+
+3. IMPLEMENTATION PHASE
+   - Create test directory structure if it doesn't exist
+   - Implement tests for one component at a time
+   - Use appropriate testing patterns (unit, integration, etc.)
+   - Include meaningful assertions and test descriptions
+   - Add appropriate mocks and test fixtures as needed
+
+4. EXECUTION PHASE
+   - Run tests for each component
+   - Document and categorize any failures
+   - Fix issues in the implementation or tests as needed
+   - Re-run tests until all pass
+   - Document results, including code coverage if available
+
+5. REPORT PHASE
+   - Summarize testing approach
+   - Document test coverage
+   - Identify areas for future testing improvement
+   - Make suggestions for code improvements based on testing
+
+Focus on one component completely before moving to the next. Prioritize critical components that affect many parts of the system. Ensure tests are maintainable and provide clear failure messages.
+Finish once all tests of all the key components are passing and the code is stable.
+"""
+available_tools = ["filesystem", "shell"]
+arguments = []

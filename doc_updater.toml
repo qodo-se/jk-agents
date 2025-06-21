@@ -1,0 +1,94 @@
+# Define the doc_updater command
+[commands.doc_updater]
+description = "Analyze code changes and automatically update documentation to reflect modifications, ensuring documentation stays synchronized with the codebase."
+instructions = """
+Your role is to analyze code changes and update documentation to maintain synchronization between code and documentation. Follow these steps:
+
+1. ANALYSIS PHASE
+   - Examine git diff to identify all code changes
+   - Identify affected functions, classes, APIs, and modules
+   - Locate existing documentation files (README.md, docs/, API docs, inline comments)
+   - Determine which documentation sections need updates
+
+2. DOCUMENTATION ASSESSMENT PHASE
+   - Review current documentation for accuracy against new code
+   - Identify outdated information, missing features, or deprecated functionality
+   - Check for consistency in documentation style and format
+   - Assess completeness of examples and usage instructions
+
+3. UPDATE IMPLEMENTATION PHASE
+   - Update README files with new features or changed functionality
+   - Modify API documentation to reflect signature changes
+   - Update inline code comments and docstrings
+   - Revise examples and usage guides
+   - Update configuration documentation if applicable
+
+4. VALIDATION PHASE
+   - Ensure all documentation changes are accurate and complete
+   - Verify examples still work with the updated code
+   - Check for broken links or references
+   - Maintain consistent formatting and style
+
+5. COMPLETION PHASE
+   - Provide a summary of all documentation updates made
+   - List any documentation that may need manual review
+   - Suggest additional documentation improvements if needed
+
+Focus on maintaining clear, accurate, and helpful documentation that serves both developers and end users.
+"""
+available_tools = ["git", "filesystem", "shell"]
+arguments = [
+    { name = "target_directory", type = "string", required = false, description = "Directory to analyze for changes (defaults to current directory)", default = "." },
+    { name = "doc_patterns", type = "string", required = false, description = "Comma-separated patterns for documentation files", default = "*.md,docs/*,README*,CHANGELOG*" },
+    { name = "include_inline_docs", type = "boolean", required = false, description = "Whether to update inline code documentation", default = true },
+    { name = "commit_range", type = "string", required = false, description = "Git commit range to analyze (e.g., 'HEAD~5..HEAD')", default = "HEAD~1..HEAD" }
+]
+output_schema = """
+{
+    "properties": {
+        "summary": {
+            "description": "Executive summary of documentation updates performed",
+            "title": "Update Summary",
+            "type": "string"
+        },
+        "files_updated": {
+            "description": "List of documentation files that were modified",
+            "title": "Updated Files",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "code_changes_analyzed": {
+            "description": "List of code files that were analyzed for documentation impact",
+            "title": "Analyzed Code Files",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "updates_made": {
+            "description": "Detailed list of specific updates made to documentation",
+            "title": "Specific Updates",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "file": { "type": "string", "description": "Documentation file updated" },
+                    "section": { "type": "string", "description": "Section or area updated" },
+                    "change_type": { "type": "string", "description": "Type of change (added, modified, removed)" },
+                    "description": { "type": "string", "description": "Description of the update" }
+                }
+            }
+        },
+        "manual_review_needed": {
+            "description": "List of items that may require manual review",
+            "title": "Manual Review Items",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "success": {
+            "description": "Whether the documentation update process completed successfully",
+            "title": "Success",
+            "type": "boolean"
+        }
+    }
+}
+"""
+exit_expression = "success"
